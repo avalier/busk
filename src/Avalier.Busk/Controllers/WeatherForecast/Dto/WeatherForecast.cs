@@ -1,6 +1,6 @@
 using System;
 
-namespace Avalier.Busk
+namespace Avalier.Busk.Controllers.WeatherForecast.Dto
 {
     public class WeatherForecast
     {

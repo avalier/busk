@@ -1,0 +1,29 @@
+
+### Request: Valid ###
+
+POST https://localhost:5001/publish HTTP/1.1
+Content-Type: application/cloudevent+json
+ce-specversion: 1.0
+ce-source: https://avalier.io/busk
+ce-type: Avalier.Busk.CloudEventTests.CanCreateCloudEvent
+ce-id: 89434161-0986-4167-b478-7f89e2ea1248
+
+{
+  "Description": "Hello World"
+}
+
+
+### Request: Missing ce-specversion header ###
+
+POST https://localhost:5001/publish HTTP/1.1
+Content-Type: application/cloudevent+json
+ce-specversion: 1.0
+ce-source: https://avalier.io/busk
+ce-type: Avalier.Busk.CloudEventTests.CanCreateCloudEvent
+ce-id: 89434161-0986-4167-b478-7f89e2ea1248
+
+{
+  "Description": "Hello World"
+}
+
+###
