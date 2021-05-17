@@ -14,12 +14,13 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System.Diagnostics.CodeAnalysis;
+using CloudNative.CloudEvents;
+using Grpc.Core;
 using OpenTelemetry.Exporter;
 using Microsoft.Extensions.Primitives;
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-
 
 namespace Avalier.Busk
 {
@@ -47,8 +48,10 @@ namespace Avalier.Busk
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers(options =>
-                options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true
-            );
+            {
+                options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+                options.InputFormatters.Insert(0, new CloudEventJsonInputFormatter());
+            });
             
             // Swagger //
             services.AddSwaggerGen(c =>
@@ -85,15 +88,18 @@ namespace Avalier.Busk
             });
 
             /*/
-            services.AddSingleton<Avalier.Busk.IClient>(serviceProvider => 
-                Avalier.Busk.Client.Create(
-                    serviceProvider.GetService<ILogger<Avalier.Busk.Client>>(),
-                    "https://avalier.io/busk", 
-                    "https://localhost:5001/api/publish"
-                )
+            // Busk //
+            services.AddBuskProducer("https://localhost:5001/api/publish");
+            services.AddBuskConsumer(builder => builder
+                .SetEndpoint("https://localhost:5001/api/publish")
+                .SetConsumer("https://localhost:5001/api/consume")
+                //.ScanAssembly(this.GetType().Assembly)
+                .AddHandler<Handlers.JobCompletedHandler>()
+                .CreateSubscriptions(true)
+                .RegisterHandlers(true)
             );
             //*/
-            services.AddBuskClient("https://localhost:5001/api/publish");
+
         }
         
         public void ConfigureContainer(ContainerBuilder builder)

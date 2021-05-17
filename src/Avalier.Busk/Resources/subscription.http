@@ -1,12 +1,11 @@
 
-### Request: Valid ###
-
-POST https://localhost:5001/subscription HTTP/1.1
+POST https://localhost:3322/api/subscription HTTP/1.1
 Content-Type: application/json
 
 {
-  "Type": "Avalier.Busk.CloudEventTests.CanCreateCloudEvent",
-  "Endpoint": "https://localhost:5001/consume"
+  "Endpoint": "https://localhost:5001/api/consume",
+  "Topics": [
+    "Avalier.Busk.Contracts.JobCommenced",
+    "Avalier.Busk.Contracts.JobCompleted"
+  ]
 }
-
-###

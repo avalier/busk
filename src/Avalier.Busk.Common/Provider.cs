@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using CloudNative.CloudEvents;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 //using Microsoft.AspNetCore.Mvc;
 //using Microsoft.AspNetCore.Routing.Matching;
@@ -34,7 +35,13 @@ namespace Avalier.Busk
 
         public async Task PublishAsync(CloudEvent cloudEvent)
         {
-            _logger.LogInformation("Publishing event {Type} with id {Id} from {Source}", cloudEvent.Type, cloudEvent.Id, cloudEvent.Source);
+            _logger.LogInformation(
+                "Publishing event {Type} with id {Id} from {Source} with data: {Data}", 
+                cloudEvent.Type, 
+                cloudEvent.Id, 
+                cloudEvent.Source,
+                JsonConvert.SerializeObject(cloudEvent.Data)
+            );
             
             var httpClientHandler = new HttpClientHandler()
             {
@@ -45,9 +52,13 @@ namespace Avalier.Busk
             
             var content = new CloudEventContent(
                 cloudEvent,
-                ContentMode.Structured,
+                ContentMode.Binary,
                 new JsonEventFormatter()
             );
+            
+            
+            var json = await content.ReadAsStringAsync();
+            _logger.LogWarning("Publishing event {CloudEventContent}", json);
             
             foreach (var endpoint in await _storageProvider.GetSubscriptionsAsync(cloudEvent.Type))
             {

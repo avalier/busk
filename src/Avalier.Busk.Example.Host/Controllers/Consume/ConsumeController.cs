@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace Avalier.Busk.Controllers.Consume
+namespace Avalier.Busk.Example.Host.Controllers.Consume
 {
     [ApiController]
     [Route("api/consume")]

@@ -7,12 +7,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Avalier.Busk.Controllers.Subscription.Dto {
 
-    public class SubscriptionLine
+    public class CreateSubscription
     {
-        public string Source { get; set; }
+        public string Endpoint { get; set; } = "";
 
-        public string Type { get; set; }
-
-        public string Endpoint { get; set; }
+        public List<string> Topics { get; set; } = new List<string>();
     }
 }

@@ -40,9 +40,13 @@ namespace Avalier.Busk
             
             var content = new CloudEventContent(
                 cloudEvent,
-                ContentMode.Structured,
+                ContentMode.Binary,
                 new JsonEventFormatter()
             );
+
+            var json = await content.ReadAsStringAsync();
+            
+            _logger.LogWarning("Publishing event {CloudEventContent}", json);
             
             var response = await _httpClient.PostAsync(this.Endpoint, content);
         }

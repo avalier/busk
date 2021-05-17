@@ -24,9 +24,12 @@ namespace Avalier.Busk.Controllers.Subscription
         }
 
         [HttpPost("")]
-        public async Task<IActionResult> Post([FromBody] Dto.SubscriptionLine subscription)
+        public async Task<IActionResult> Post([FromBody] Dto.CreateSubscription createSubscription)
         {
-            await _bus.SubscribeAsync(subscription.Type, subscription.Endpoint);
+            foreach (var topic in createSubscription.Topics)
+            {
+                await _bus.SubscribeAsync(topic, createSubscription.Endpoint);
+            }
             return this.Ok();
         }
         
