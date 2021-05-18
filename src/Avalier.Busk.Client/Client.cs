@@ -46,9 +46,9 @@ namespace Avalier.Busk
 
             var json = await content.ReadAsStringAsync();
             
-            _logger.LogWarning("Publishing event {CloudEventContent}", json);
-            
-            var response = await _httpClient.PostAsync(this.Endpoint, content);
+            _logger.LogInformation("Busk - Publishing event {Topic}: {Body}", cloudEvent.Type, json);
+            var url = Url.Combine(this.Endpoint, Magic.VirtualPath.Publish);
+            var response = await _httpClient.PostAsync(url, content);
         }
 
         public static IClient Create(ILogger<Client> logger, string source, string endpoint)

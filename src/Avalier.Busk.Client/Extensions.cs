@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -11,6 +12,11 @@ namespace Avalier.Busk
 {
     public static class Extensions
     {
+        public static IApplicationBuilder UseBuskConsumer(this IApplicationBuilder builder)
+        {
+            return builder.UseMiddleware<BuskConsumerMiddleware>();
+        }
+        
         public static IServiceCollection AddBuskProducer(this IServiceCollection services, string endpoint, string source = "")
         {
             if (string.IsNullOrEmpty(source))
@@ -22,13 +28,12 @@ namespace Avalier.Busk
                 Avalier.Busk.Client.Create(
                     (serviceProvider.GetService<ILogger<Avalier.Busk.Client>>()),
                     source, 
-                    Url.Combine(endpoint, "api/publish")
+                    endpoint
                 )
             );
 
             return services;
         }
-
         
         public static IServiceCollection AddBuskConsumer(this IServiceCollection services, Action<DispatcherBuilder> configure)
         {
@@ -70,7 +75,7 @@ namespace Avalier.Busk
         {
             var request = new Dto.CreateSubscription()
             {
-                Endpoint = Url.Combine(builder.Consumer, "api/consume"),
+                Endpoint = Url.Combine(builder.Consumer, Magic.VirtualPath.Consume),
                 Topics = builder.GetTopics()
             };
             
@@ -79,7 +84,7 @@ namespace Avalier.Busk
                 ServerCertificateCustomValidationCallback = (httpRequestMessage, cert, cetChain, policyErrors) => true
             })
             {
-                var uri = Url.Combine(builder.Endpoint, "api/subscription");
+                var uri = Url.Combine(builder.Endpoint, Magic.VirtualPath.Subscription);
                 using (var httpClient = new HttpClient(httpClientHandler))
                 {
                     var response = httpClient.PostAsJsonAsync(uri, request).GetAwaiter().GetResult();

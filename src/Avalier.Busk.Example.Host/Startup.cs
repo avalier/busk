@@ -19,7 +19,7 @@ using Microsoft.Extensions.Primitives;
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-
+using CloudNative.CloudEvents;
 
 namespace Avalier.Busk.Example.Host
 {
@@ -46,7 +46,15 @@ namespace Avalier.Busk.Example.Host
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //*/
             services.AddControllers();
+            /*/
+            services.AddControllers(options =>
+            {
+                options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+                options.InputFormatters.Insert(0, new CloudEventJsonInputFormatter());
+            });
+            //*/
             
             // Swagger //
             services.AddSwaggerGen(c =>
@@ -90,7 +98,7 @@ namespace Avalier.Busk.Example.Host
                 .SetConsumer("https://localhost:5001")
                 .ScanAssembly(this.GetType().Assembly)
                 //.AddHandler<Handlers.JobCompletedHandler>()
-                .CreateSubscriptions(false)
+                .CreateSubscriptions(true)
                 .RegisterHandlers(true)
             );
             //*/
@@ -163,6 +171,8 @@ namespace Avalier.Busk.Example.Host
 
             app.UseAuthorization();
 
+            app.UseBuskConsumer();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

@@ -32,7 +32,8 @@ namespace Avalier.Busk.Example.Host
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .Enrich.FromLogContext()
                 .Enrich.WithSpan()
-                .WriteTo.Console(formatter: new CompactJsonFormatter())
+                //.WriteTo.Console(formatter: new CompactJsonFormatter())
+                .WriteTo.Console()
                 .CreateLogger();
 
             try

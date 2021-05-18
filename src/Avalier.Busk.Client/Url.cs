@@ -6,7 +6,7 @@ namespace Avalier.Busk
         {
             var url = endpoint;
             if (!url.EndsWith("/")) url += "/";
-            url += "api/consume";
+            url += virtualPath;
             return url;
         }
     }
